@@ -20,6 +20,10 @@ def calcul_code_binaire_combi(actions):
         combi = bin(i)[2:]
         liste_combi_mode_binaire.append(combi)
         i += 1
+    for i in range(len(liste_combi_mode_binaire)):
+        while len(liste_combi_mode_binaire[i]) != n:
+            liste_combi_mode_binaire[i] = "0" + liste_combi_mode_binaire[i]
+    print(liste_combi_mode_binaire[0])
     return liste_combi_mode_binaire
 
 def calcul_combinaisons_actions(actions):
@@ -86,3 +90,17 @@ calcul_meilleur_placement(actions)
 #list_type_combinaisons_possibles(actions)
 #list_combinaisons_actions(actions)
 #Calcul de la liste des actions les plus rentables
+liste_a =[12,14,25]
+def calcul_code_binaire_liste_a(liste_a):
+    # créer des structures binaires pour ensuite enregistrer des combinaisons d'actions
+    n=len(liste_a)
+    nombre_combinaisons = 2**n
+    i = 0
+    liste_a_combi_mode_binaire = []
+    while i != nombre_combinaisons:
+        combi = bin(i)[2:]
+        liste_a_combi_mode_binaire.append(combi)
+        i += 1
+    print(liste_a_combi_mode_binaire)
+
+#calcul_code_binaire_liste_a(liste_a)
