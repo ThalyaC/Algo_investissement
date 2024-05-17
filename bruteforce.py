@@ -34,24 +34,28 @@ def calcul_combinaisons_actions(actions):
             if nombre_binaire[j] == "1":
                 combi_actions.append(actions_avec_benefices_reels[j+1])
         liste_combi_actions.append(combi_actions)
-    #print(liste_combi_actions[2000]) 
+    print(len(liste_combi_actions))
+    print(liste_combi_actions[1])
+    print(liste_combi_actions[2000]) 
     #résultat :[[20, 5, 1.0], [30, 10, 3.0], [50, 15, 7.5], [70, 20, 14.0], [60, 17, 10.2], [22, 7, 1.54]]
     
     return liste_combi_actions
 
 def calcul_liste_portefeuille_max(actions, portefeuille_max):
     liste_combi_actions = calcul_combinaisons_actions(actions)
+    print("nombre de combinaisons totales possibles ", len(liste_combi_actions))
     liste_combi_actions_portefeuille =[]
-    somme = 0
+    
     for combi in liste_combi_actions:
-        
+        somme = 0
         for action in combi:
             somme += action[0]
-            if somme <= portefeuille_max:
-                liste_combi_actions_portefeuille.append(combi)
-    print(len(liste_combi_actions_portefeuille))
+        if somme <= portefeuille_max:
+            liste_combi_actions_portefeuille.append(combi)
+    #print(liste_combi_actions_portefeuille)
+    print(f"Nombre de combinaisons d'actions possibles dont la somme est inférieure à {portefeuille_max} euros : {len(liste_combi_actions_portefeuille)}")
     
-    #352030 au lieu de 1 048 576
+    #16 au lieu de 1 048 576
     return liste_combi_actions_portefeuille
 
 def calcul_meilleur_placement(actions):
