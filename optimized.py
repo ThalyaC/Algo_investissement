@@ -33,12 +33,10 @@ def calculer_benefice(actions):
         actions_benefices_reels.append({"produit":produit,"prix":prix,"benefice_reel":benefice_reel})
     return actions_benefices_reels
 
-def sacADos_dynamique(portefeuille, actions_benefices_reels):
-    #_ : variable jetable
-    # Création de la matrice à deux dimensions
-    matrice = [[0 for _ in range(portefeuille + 1)] for _ in range(len(actions_benefices_reels) + 1)]
 
+def remplir_matrice(portefeuille, actions_benefices_reels, matrice):
     #remplissage de la matrice (du tableau)
+    #_ : variable jetable
     for i in range(1, len(actions_benefices_reels) + 1):
         prix = actions_benefices_reels[i-1]["prix"] 
         benefice_reel = actions_benefices_reels[i-1]["benefice_reel"]
@@ -47,8 +45,11 @@ def sacADos_dynamique(portefeuille, actions_benefices_reels):
                 matrice[i][w] = max(benefice_reel + matrice[i-1][w-prix], matrice[i-1][w])
             else:
                 matrice[i][w] = matrice[i-1][w]
+    return matrice
 
-    # Retrouver les éléments en fonction de la somme
+
+def retrouver_actions_selectionnees(portefeuille, actions_benefices_reels, matrice):
+    # Retrouver les actions en fonction du portefeuille
     w = portefeuille
     n = len(actions_benefices_reels)
     elements_selection = []
@@ -57,10 +58,18 @@ def sacADos_dynamique(portefeuille, actions_benefices_reels):
         if matrice[n][w] != matrice[n-1][w]:
             elements_selection.append(actions_benefices_reels[n-1])
             w -= actions_benefices_reels[n-1]["prix"]
-
         n -= 1
+    return elements_selection
 
+
+def sacADos_dynamique(portefeuille, actions_benefices_reels):
+    #Création de la matrice à deux dimensions, retourne le bénéfice maximal et la liste des actions sélectionnées
+    #_ : variable jetable
+    matrice = [[0 for _ in range(portefeuille + 1)] for _ in range(len(actions_benefices_reels) + 1)]
+    matrice = remplir_matrice(portefeuille, actions_benefices_reels, matrice)
+    elements_selection = retrouver_actions_selectionnees(portefeuille, actions_benefices_reels, matrice)
     return matrice[-1][-1], elements_selection
+
 
 def calcul_meilleur_placement_optimized(portefeuille, actions):
     actions_benefices_reels = calculer_benefice(actions)
