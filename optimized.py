@@ -1,29 +1,5 @@
-actions = [
-    {"name":"action 1", "price":20, "profit":5},
-    {"name":"action 2", "price":30, "profit":10},
-    {"name":"action 3", "price":50, "profit":15},
-    {"name":"action 4", "price":70, "profit":20},
-    {"name":"action 5", "price":60, "profit":17},
-    {"name":"action 6", "price":80, "profit":25},
-    {"name":"action 7", "price":22, "profit":7},
-    {"name":"action 8", "price":26, "profit":11},
-    {"name":"action 9", "price":48, "profit":13},
-    {"name":"action 10", "price":34, "profit":27},
-    {"name":"action 11", "price":42, "profit":17},
-    {"name":"action 12", "price":110, "profit":9},
-    {"name":"action 13", "price":38, "profit":23},
-    {"name":"action 14", "price":14, "profit":1},
-    {"name":"action 15", "price":18, "profit":3},
-    {"name":"action 16", "price":8, "profit":8},
-    {"name":"action 17", "price":4, "profit":12},
-    {"name":"action 18", "price":10, "profit":14},
-    {"name":"action 19", "price":24, "profit":21},
-    {"name":"action 20", "price":114, "profit":18}
-    ]
-
-
 def calculer_benefice(actions):
-    # Calcul du bénéfice réel pour chaque action
+    """Calcul du bénéfice réel pour chaque action"""
     actions_benefices_reels = []
     for action in actions:
         produit = action["name"]
@@ -35,8 +11,7 @@ def calculer_benefice(actions):
 
 
 def remplir_matrice(portefeuille, actions_benefices_reels, matrice):
-    #remplissage de la matrice (du tableau)
-    #_ : variable jetable
+    """Remplissage de la matrice (du tableau)"""
     for i in range(1, len(actions_benefices_reels) + 1):
         prix = int(actions_benefices_reels[i-1]["price"]*100) 
         benefice_reel = int(actions_benefices_reels[i-1]["benefice_reel"]*100)
@@ -49,21 +24,20 @@ def remplir_matrice(portefeuille, actions_benefices_reels, matrice):
 
 
 def retrouver_actions_selectionnees(portefeuille, actions_benefices_reels, matrice):
-    # Retrouver les actions en fonction du portefeuille
-    w = portefeuille
+    """Retrouver les actions en fonction du portefeuille"""
     n = len(actions_benefices_reels)
     elements_selection = []
 
-    while w >= 0 and n >= 0:
-        if matrice[n][w] != matrice[n-1][w]:
+    while portefeuille >= 0 and n >= 0:
+        if matrice[n][portefeuille] != matrice[n-1][portefeuille]:
             elements_selection.append(actions_benefices_reels[n-1])
-            w -= int(actions_benefices_reels[n-1]["price"]*100)
+            portefeuille -= int(actions_benefices_reels[n-1]["price"]*100)
         n -= 1
     return elements_selection
 
 
 def sacADos_dynamique(portefeuille, actions_benefices_reels):
-    #Création de la matrice à deux dimensions, retourne le bénéfice maximal et la liste des actions sélectionnées
+    """Création de la matrice à deux dimensions, retourne le bénéfice maximal et la liste des actions sélectionnées"""
     #_ : variable jetable
     matrice = [[0 for _ in range(portefeuille + 1)] for _ in range(len(actions_benefices_reels) + 1)]
     matrice = remplir_matrice(portefeuille, actions_benefices_reels, matrice)
@@ -85,8 +59,14 @@ def placement_optimized(portefeuille, actions):
     for action_choisie in selection:
         print(action_choisie["name"], "prix : ",action_choisie["price"], "profit : ", action_choisie["benefice_reel"])
         prix_actions.append(action_choisie["price"])
-    print(f"Pour un investissement de {sum(prix_actions)} euros.")
+    somme_prix_actions = sum(prix_actions)
+    somme_prix_actions_decimal = float(somme_prix_actions)
+    investissement_arrondi = arrondir_investissement(somme_prix_actions_decimal)
+    print(f"Pour un investissement de {investissement_arrondi} euros.")
  
+def arrondir_investissement(investissement_brut):
+    investissement_brut_str = str(investissement_brut)
+    virgule_investissement = investissement_brut_str.index(".")
+    investissement_arrondi = investissement_brut_str[:virgule_investissement + 3]
+    return investissement_arrondi
 
-#portefeuille = 500
-#placement_optimized(portefeuille, actions)
