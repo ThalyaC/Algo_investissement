@@ -1,17 +1,37 @@
-actions = {1:[20,5],2:[30,10],3:[50,15],4:[70,20],5:[60,17],6:[80,25],7:[22,7],8:[26,11],9:[48,13],10:[34,27],11:[42,17],12:[110,9],13:[38,23],14:[14,1],15:[18,3],16:[8,8],17:[4,12],18:[10,14],19:[24,21],20:[114,18]}
-
+actions = [
+    {"name":"action 1", "price":20, "profit":5},
+    {"name":"action 2", "price":30, "profit":10},
+    {"name":"action 3", "price":50, "profit":15},
+    {"name":"action 4", "price":70, "profit":20},
+    {"name":"action 5", "price":60, "profit":17},
+    {"name":"action 6", "price":80, "profit":25},
+    {"name":"action 7", "price":22, "profit":7},
+    {"name":"action 8", "price":26, "profit":11},
+    {"name":"action 9", "price":48, "profit":13},
+    {"name":"action 10", "price":34, "profit":27},
+    {"name":"action 11", "price":42, "profit":17},
+    {"name":"action 12", "price":110, "profit":9},
+    {"name":"action 13", "price":38, "profit":23},
+    {"name":"action 14", "price":14, "profit":1},
+    {"name":"action 15", "price":18, "profit":3},
+    {"name":"action 16", "price":8, "profit":8},
+    {"name":"action 17", "price":4, "profit":12},
+    {"name":"action 18", "price":10, "profit":14},
+    {"name":"action 19", "price":24, "profit":21},
+    {"name":"action 20", "price":114, "profit":18}
+    ]
 
 def calculer_benefice(actions):
-    # Calcul du bénéfice réel pour chaque action
-    for action, details in actions.items():
-        prix_depart, benefice_pourcent = details
+    """Calculer le bénéfice réel pour chaque action"""
+    for action in actions:
+        prix_depart, benefice_pourcent = action["price"], action["profit"]
         benefice_reel = (prix_depart * benefice_pourcent)/100
-        actions[action].append(benefice_reel)
+        action["benefice_reel"] = benefice_reel
     return actions
 
 
 def calcul_code_binaire_combi(actions):
-    # créer des structures binaires pour ensuite enregistrer des combinaisons d'actions
+    """Créer les structures binaires pour ensuite enregistrer les combinaisons d'actions"""
     n=len(actions)
     nombre_combinaisons = 2**n
     i = 0
@@ -28,7 +48,7 @@ def calcul_code_binaire_combi(actions):
 
 
 def calcul_combinaisons_actions(actions):
-    # Calculer toutes les possibilités de combinaisons d'actions
+    """Calculer toutes les possibilités de combinaisons d'actions"""
     actions_avec_benefices_reels = calculer_benefice(actions)
     liste_type = calcul_code_binaire_combi(actions)
     liste_combi_actions = []
@@ -37,48 +57,51 @@ def calcul_combinaisons_actions(actions):
         combi_actions = []
         for j in range(len(nombre_binaire)):
             if nombre_binaire[j] == "1":
-                combi_actions.append(actions_avec_benefices_reels[j+1])
+                combi_actions.append(actions_avec_benefices_reels[j]) #
         liste_combi_actions.append(combi_actions)
-    print(f"\n\033[0;33m{len(liste_combi_actions)} \033[0;34mcombinaisons avec \033[0;33m{len(actions)} \033[0;34mactions\033[0m \n")
-    print(f"Exemple : une combinaison \n{liste_combi_actions[2000]}")    
+    print(f"\n\033[0;33m{len(liste_combi_actions)} \033[0;34mcombinaisons avec \033[0;33m{len(actions)} \033[0;34mactions\033[0m \n")   
     return liste_combi_actions
 
 
 def calcul_combi_actions_portefeuille_max(actions, portefeuille_max):
-    # Calcule la liste des combinaisons possibles en fonction d'un portefeuille donné
+    """Calculer la liste des combinaisons possibles en fonction d'un portefeuille donné"""
     liste_combi_actions = calcul_combinaisons_actions(actions)
     liste_combi_actions_portefeuille =[]
     
     for combi in liste_combi_actions:
-        somme = 0
+        somme_price = 0
         for action in combi:
-            somme += action[0]
-        if somme <= portefeuille_max:
+            somme_price += action["price"]
+        if somme_price <= portefeuille_max:
             liste_combi_actions_portefeuille.append(combi)
     print(f"{len(liste_combi_actions_portefeuille)} combinaisons dont la somme est inférieure à {portefeuille_max} euros")
     
     return liste_combi_actions_portefeuille
 
 
-def calcul_meilleur_placement(actions):
+def calcul_meilleur_placement(actions, portefeuille_max):
+    """Calculer le meilleur placement"""
     liste_portefeuille_max=calcul_combi_actions_portefeuille_max(actions, portefeuille_max)
     liste_profit_combi = []
 
     for combi in liste_portefeuille_max:
-        somme = 0
+        somme_benefice_reel = 0
         for action in combi:
-            somme += action[2]
-        liste_profit_combi.append([combi,somme])
+            somme_benefice_reel += action["benefice_reel"] #action[2]
+        liste_profit_combi.append([combi,somme_benefice_reel])
     liste_profit_combi.sort(key=lambda x: x[1], reverse=True)
-    print(f"La meilleure combinaison est : {liste_profit_combi[0]}")
-    
+    selection = liste_profit_combi[0][0]
+    print("\nLa meilleure combinaison est :")
+    for action_choisie in selection:
+        print(action_choisie["name"], "prix : ",action_choisie["price"], "euros --> Profit : ", action_choisie["benefice_reel"], "euros")
+        
     meilleur_placement = liste_profit_combi[0]
     actions_achetees = meilleur_placement[0]
-    somme2 = 0
+    somme_actions_achetees = 0
     for action_achetee in actions_achetees:
-        somme2 += action_achetee[0]
-    print(f"\n\033[0;34mVous investissez \033[0;33m{somme2} \033[0;34meuros dans \033[0;33m{len(actions_achetees)} \033[0;34mactions aujourd'hui et vous gagnez \033[0;33m{meilleur_placement[1]} \033[0;34meuros dans 2 ans.\033[0m \n")
+        somme_actions_achetees += action_achetee["price"] #[0]
+    print(f"\n\033[0;34mVous investissez \033[0;33m{somme_actions_achetees} \033[0;34meuros dans \033[0;33m{len(actions_achetees)} \033[0;34mactions aujourd'hui et vous gagnez \033[0;33m{meilleur_placement[1]} \033[0;34meuros dans 2 ans.\033[0m \n")
         
 
 portefeuille_max = 500
-calcul_meilleur_placement(actions)
+calcul_meilleur_placement(actions, portefeuille_max)
